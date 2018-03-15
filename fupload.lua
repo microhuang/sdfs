@@ -58,7 +58,9 @@ end
 
 ngx.header.content_type = "text/plain"
 
+-- config
 local ip = '127.0.0.1'
+local ext = ''
 
 
 --local fff = ngx.re.match('abcd.tar.gz','(\\w+)(.*)')
@@ -159,7 +161,7 @@ while true do
         end
 ]]
 	  local st = fdfs_storage(ip)
-	  local sres, serr = st:upload_by_buff(res,'')
+	  local sres, serr = st:upload_by_buff(res,ext)
 	  files[i] = sres.file_name
 	  --ngx.say("upload success:" .. sres.file_name)
     elseif typ == "part_end" then
