@@ -20,6 +20,10 @@ requirements
     fastdfs-nginx-module
     lua-nginx-module
 
+        upload
+        fastdfs
+        cjson
+
 
 system requirements
 

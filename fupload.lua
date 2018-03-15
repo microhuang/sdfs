@@ -12,7 +12,11 @@ end
 function fdfs_storage(ip)
 	local tracker = require('resty.fastdfs.tracker')
 	local storage = require('resty.fastdfs.storage')
-	local tk = tracker:new()
+	local tk, err = tracker:new()
+	if not tk then
+	    ngx.say('get tracker error:' .. err)
+	    ngx.exit(200)
+	end
 	tk:set_timeout(3000)
 	local ok, err = tk:connect({host=ip,port=22122})
 	if not ok then
