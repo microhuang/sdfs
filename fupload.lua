@@ -9,12 +9,12 @@ function _dump_res(res)
     ngx.say("")
 end
 
-function fdfs_storage()
+function fdfs_storage(ip)
 	local tracker = require('resty.fastdfs.tracker')
 	local storage = require('resty.fastdfs.storage')
 	local tk = tracker:new()
 	tk:set_timeout(3000)
-	local ok, err = tk:connect({host='127.0.0.1',port=22122})
+	local ok, err = tk:connect({host=ip,port=22122})
 	if not ok then
 	    ngx.say('connect error:' .. err)
 	    ngx.exit(200)
@@ -57,6 +57,8 @@ end
 
 
 ngx.header.content_type = "text/plain"
+
+local ip = '127.0.0.1'
 
 
 --local fff = ngx.re.match('abcd.tar.gz','(\\w+)(.*)')
@@ -156,8 +158,8 @@ while true do
         else
         end
 ]]
-	  local st = fdfs_storage()
-	  local sres, serr = st:upload_by_buff(res,'txt')
+	  local st = fdfs_storage(ip)
+	  local sres, serr = st:upload_by_buff(res,'')
 	  files[i] = sres.file_name
 	  --ngx.say("upload success:" .. sres.file_name)
     elseif typ == "part_end" then
