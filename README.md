@@ -1,6 +1,8 @@
 安全 -- 上传、访问，均要求验证token
 
-快速 -- 纯lua实现、独立于业务（jvm、php、python）、支持fastDFS存储、发挥nginx sendfile特性
+快速 -- 纯lua实现、独立于业务（jvm、php、python）、发挥nginx sendfile特性
+
+分布式 -- 支持fastDFS存储
 
 业务通过私有token接口申请上传权限，后，业务凭借token向upload接口上传文件，校验通过后直接向dfs写入文件，并返回文件访问路径；
 
