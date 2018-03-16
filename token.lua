@@ -28,9 +28,10 @@ local timestamp = os.time()
 local t = {}
 t = {token=token,file_type=file_type,file_size=file_size,timestamp=timestamp}
 
-local success, err, forcible = sessiondb:set(token,token)
+local cjson = require 'cjson';
+--local success, err, forcible = sessiondb:set(token,cjson.encode(t))
 -- 86400s
-local ok,err = sessiondb:safe_set(token,token,86400)
+local ok,err = sessiondb:safe_set(token,cjson.encode(t),86400)
 if ok then
     ngx.say('{"sdfs_token":"'..token..'", "code":200, "message":"success!"}')
 else
