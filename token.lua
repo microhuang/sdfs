@@ -33,7 +33,7 @@ local cjson = require 'cjson';
 -- 86400s
 local ok,err = sessiondb:safe_set(token,cjson.encode(t),86400)
 if ok then
-    ngx.say('{"sdfs_token":"'..token..'", "code":200, "message":"success!"}')
+    ngx.say('{"token":"'..token..'", "code":200, "message":"success!"}')
 else
     ngx.say(err)
 end
