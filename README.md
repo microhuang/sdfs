@@ -42,15 +42,15 @@ REST
 
     /upload
 
-        public + token
+        public(front-end) + token
 
     /token
 
-        private
+        private(back-end)
 
     /file
 
-        public + token
+        public(front-end) + token
 
 
 usage
