@@ -61,7 +61,7 @@ usage
 
     curl http://127.0.0.1:81/upload?token=15b02b28184648a136a71855945c83a1 -F "file1=@abc.txt"
 
-        response => {"code":200, "message":"file upload success", "data": "["M00\/00\/00\/fwAAAVqrTn6AEZ6iAAAACuwBvyw6479164"]"}
+        response => {"code":200, "message":"file upload success", "data": ["M00\/00\/00\/fwAAAVqrTn6AEZ6iAAAACuwBvyw6479164"]}
 
     curl http://127.0.0.1:81/file/M00/00/00/fwAAAVqrTn6AEZ6iAAAACuwBvyw6479164?token=15b02b28184648a136a71855945c83a1
 
