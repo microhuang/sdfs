@@ -1,4 +1,4 @@
-package.path = '/var/opt/dfs/lua-resty-upload/lib/resty/?.lua;' .. package.path
+package.path = '/var/opt/dfs/lua-resty-upload/lib/?.lua;' .. package.path
 
 package.path = '/var/opt/dfs/lua-resty-fastdfs/lib/?.lua;' .. package.path
 
@@ -80,12 +80,12 @@ if token and string.len(token)>1 then
     local sessiondb = ngx.shared.sessiondb
     local t = sessiondb:get(token)
     if not t then
-        --ngx.say("token id not found")
-        --return
+        ngx.say("token id not found")
+        return
     end
 else
-    --ngx.say("session id not found")
-    --return
+    ngx.say("session id not found")
+    return
 end
 
 -- paramers
@@ -108,7 +108,7 @@ ngx.header.Access_Control_Allow_Origin = cross_domain
 ngx.header.Access_Control_Allow_Credentials = "true"
 
 
-local upload = require "upload"
+local upload = require "resty.upload"
 
 local chunk_size = 4096
 local form = upload:new(chunk_size)

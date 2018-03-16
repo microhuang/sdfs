@@ -23,6 +23,7 @@ requirements
         upload
         fastdfs
         cjson
+        bit
 
 
 system requirements
@@ -54,7 +55,11 @@ REST
 
 usage
 
-    curl http://127.0.0.1:81/upload -F "ffff=@abc.txt"
+    curl http://127.0.0.1:81/token
+
+    response => {"sdfs_token":"15b02b28184648a136a71855945c83a1", "code":200, "message":"success!"}
+
+    curl http://127.0.0.1:81/upload?token=15b02b28184648a136a71855945c83a1 -F "file1=@abc.txt"
 
     response => {"code":200, "message":"file upload success", "data": "["M00\/00\/00\/fwAAAVqp8fmACxRpAAAACuwBvyw0671929"]"}
 
