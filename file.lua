@@ -1,6 +1,7 @@
 -- todo: biz begin
 
 -- biz end
+ngx.header.content_type = "text/plain"
 
 
 -- check token
@@ -11,11 +12,13 @@ if token and string.len(token)>1 then
     local t = sessiondb:get(token)
     if not t then
         ngx.say("token id not found")
-        return
+        ngx.exit(200)
+        --return
     end
 else
         ngx.say("session id not found")
-        return
+        ngx.exit(200)
+        --return
 end
 
 
