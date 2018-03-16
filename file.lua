@@ -9,6 +9,10 @@ local token = ngx.req.get_uri_args()["token"]
 local session = ngx.var.cookie_JSESSIONID
 if token and string.len(token)>1 then
     local sessiondb = ngx.shared.sessiondb
+    if not sessiondb then
+        ngx.say("please init sessiondb in http: lua_shared_dict sessiondb XXXm;")
+        return
+    end
     local t = sessiondb:get(token)
     if not t then
         ngx.say("token id not found")
