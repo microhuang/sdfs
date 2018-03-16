@@ -193,7 +193,7 @@ if i==0 then
 end
 
 local cjson = require 'cjson';
-ngx.say('{"code":200, "message":"file upload success", "data": ' .. cjson.encode(files) .. '}')
+ngx.say('{"code":200, "message":"file upload success", "data":' .. cjson.encode(files) .. '}')
 
 
 
