@@ -53,9 +53,9 @@ function get_filename(res)
         --ngx.say(ngx.md5(math.random()));
         local ext = ngx.re.match(filename[2],'(\\w+)(.*)')
         if ext and ext[2] then
-            return ngx.md5(math.random()) .. ext[2]
+            return ngx.md5(math.random()), ext[2]
         end
-        return ngx.md5(math.random())
+        return ngx.md5(math.random()), ''
     end
 end
 
@@ -139,10 +139,11 @@ while true do
     end
     if typ == "header" then
         if res[1] ~= "Content-Type" then
-            filename = get_filename(res[2])
+            filename,ext = get_filename(res[2])
             if filename then
                 i=i+1
 --[[
+                filepath = filepath .. ext
                 filepath = osfilepath  .. filename
                 if file_exists(filepath) then
                 	ngx.say('{"code":500, "message":"系统错误，请稍后再试!"}')
@@ -169,6 +170,9 @@ while true do
         end
 ]]
 	  local st = fdfs_storage(ip)
+        if (not not ext) and (string.sub(ext,1,1)==".") then
+            ext = string.sub(ext,2)
+        end
 	  local sres, serr = st:upload_by_buff(res,ext)
 	  files[i] = sres.file_name
 	  --ngx.say("upload success:" .. sres.file_name)
