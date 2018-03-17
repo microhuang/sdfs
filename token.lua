@@ -16,24 +16,29 @@ if not sessiondb then
     return
 end
 
--- paramers
 --local sid = ngx.var.cookie_JSESSIONID
 local token = getToken()
 local file_type = "jpeg"
 local file_size = "10M"
 -- owner user everyone
 local file_mod = "0777"
-local file_timeout = 3600
+-- 86400s
+local file_timeout = 86400
 local timestamp = os.time()
+
+-- paramers
+if ngx.req.get_uri_args()["file_timeout"] then
+    file_timeout = ngx.req.get_uri_args()["file_timeout"]
+end
+
 local t = {}
 t = {token=token,file_type=file_type,file_size=file_size,timestamp=timestamp}
 
 local cjson = require 'cjson';
 --local success, err, forcible = sessiondb:set(token,cjson.encode(t))
--- 86400s
-local ok,err = sessiondb:safe_set(token,cjson.encode(t),86400)
+local ok,err = sessiondb:safe_set(token,cjson.encode(t),file_timeout)
 if ok then
-    ngx.say('{"token":"'..token..'", "code":200, "message":"success!"}')
+    ngx.say('{"token":"'..token..'", "code":200, "message":"success!", "file_timeout":'..file_timeout..'}')
 else
     ngx.say(err)
 end

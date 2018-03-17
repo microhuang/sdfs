@@ -63,7 +63,7 @@ end
 ngx.header.content_type = "text/plain"
 
 -- config
-local ip = '127.0.0.1'
+local tk_ip = '127.0.0.1'
 local ext = ''
 
 
@@ -169,7 +169,7 @@ while true do
         else
         end
 ]]
-	  local st = fdfs_storage(ip)
+	  local st = fdfs_storage(tk_ip)
         if (not not ext) and (string.sub(ext,1,1)==".") then
             ext = string.sub(ext,2)
         end
