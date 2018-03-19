@@ -131,6 +131,7 @@ local osfilepath = file_path
 local files = {}
 local i=0
 
+-- 
 local sres = nil
 local serr = nil
 
@@ -159,9 +160,13 @@ while true do
                 	end
                 end
 ]]
+		    sres = nil
+		    serr = nil
             else
 		    -- 没有文件名？
-		    ngx.say('{"code":500, "message":"系统错误，请稍后再试!"}')
+		    --ngx.say('{"code":500, "message":"系统错误，请稍后再试!"}')
+		    sres = 1
+		    serr = 1
             end
         end
     elseif typ == "body" then
@@ -172,17 +177,19 @@ while true do
         else
         end
 ]]
-	  local st = fdfs_storage(tk_ip)
-        if (not not ext) and (string.sub(ext,1,1)==".") then
-            ext = string.sub(ext,2)
+        if not sres==1 then
+		  local st = fdfs_storage(tk_ip)
+		if (not not ext) and (string.sub(ext,1,1)==".") then
+		    ext = string.sub(ext,2)
+		end
+		  if sres==nil then
+		      sres, serr = st:upload_appender_by_buff(res,ext)
+		      files[i] = sres.file_name
+		else
+		      local ok, err = st:append_by_buff(sres.group_name,sres.file_name,res)
+		end
+		  --ngx.say("upload success:" .. sres.file_name)
         end
-	  if not sres then
-	      sres, serr = st:upload_appender_by_buff(res,ext)
-	      files[i] = sres.file_name
-        else
-	      local ok, err = st:append_by_buff(sres.group_name,sres.file_name,res)
-        end
-	  --ngx.say("upload success:" .. sres.file_name)
     elseif typ == "part_end" then
 --[[
         if file then
