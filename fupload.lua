@@ -51,9 +51,9 @@ function get_filename(res)
         --ngx.say(filename[2])
         math.randomseed(tostring(os.time()):reverse():sub(1, 6))
         --ngx.say(ngx.md5(math.random()));
-        local ext = ngx.re.match(filename[2],'(\\w+)(.*)')
-        if ext and ext[2] then
-            return ngx.md5(math.random()), ext[2]
+        local ext = ngx.re.match(filename[2],'/?((\\w+)/?)*(\\w+)(\\.?.*)')
+        if ext and ext[4] then
+            return ngx.md5(math.random()), ext[4]
         end
         return ngx.md5(math.random()), ''
     end
@@ -202,6 +202,8 @@ while true do
         sres = nil
         serr = nil
     elseif typ == "eof" then
+        sres = nil
+        serr = nil
         break
     else
     end
