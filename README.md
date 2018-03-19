@@ -26,6 +26,7 @@ requirements
         fastdfs
         cjson
         bit
+        redis
 
 
 system requirements

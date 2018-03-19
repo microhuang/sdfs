@@ -131,6 +131,9 @@ local osfilepath = file_path
 local files = {}
 local i=0
 
+local sres = nil
+local serr = nil
+
 while true do
     local typ, res, err = form:read()
     if not typ then
@@ -173,8 +176,12 @@ while true do
         if (not not ext) and (string.sub(ext,1,1)==".") then
             ext = string.sub(ext,2)
         end
-	  local sres, serr = st:upload_by_buff(res,ext)
-	  files[i] = sres.file_name
+	  if not sres then
+	      sres, serr = st:upload_appender_by_buff(res,ext)
+	      files[i] = sres.file_name
+        else
+	      local ok, err = st:append_by_buff(sres.group_name,sres.file_name,res)
+        end
 	  --ngx.say("upload success:" .. sres.file_name)
     elseif typ == "part_end" then
 --[[
@@ -185,6 +192,8 @@ while true do
             ngx.say('{"code":200, "message":"file upload success", "data": "' .. filename .. '", "file":{"originalname":"' .. filepath .. '","size":123,"path":"' .. filename .. '"}}')
         end
 ]]
+        sres = nil
+        serr = nil
     elseif typ == "eof" then
         break
     else
