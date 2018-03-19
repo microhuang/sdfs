@@ -1,8 +1,10 @@
 安全 -- 上传、访问，均要求验证token
 
-快速 -- 纯lua实现、独立于业务（jvm、php、python）、发挥nginx sendfile特性
+快速 -- 纯lua实现、发挥nginx sendfile特性
 
 分布式 -- 支持fastDFS存储
+
+通用性 -- 独立于业务（jvm、php、python）、跨平台、跨语言、跨业务
 
 借助nginx的特性，任何改动、部署，无缝热重启!!!
 
