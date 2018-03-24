@@ -51,7 +51,7 @@ function get_filename(res)
         --ngx.say(filename[2])
         math.randomseed(tostring(os.time()):reverse():sub(1, 6))
         --ngx.say(ngx.md5(math.random()));
-        local ext = ngx.re.match(filename[2],'/?((\\w+)/?)*(\\w+)(\\.?.*)')
+        local ext = ngx.re.match(filename[2],'/?((\\w+)/?)*(\\w+)(\\..*)')
         if ext and ext[4] then
             return ngx.md5(math.random()), ext[4]
         end
@@ -182,10 +182,14 @@ while true do
 		  local st = fdfs_storage(tk_ip)
 		if (not not ext) and (string.sub(ext,1,1)==".") then
 		    ext = string.sub(ext,2)
+		    ext = string.sub(ext,-6)
+		    ext = string.gsub(ext,"^[%s.]*(.-)[%s.]*$","%1")
 		end
 		  if sres==nil then
 		      sres, serr = st:upload_appender_by_buff(res,ext)
 		      files[i] = sres.file_name
+--local aa,bb=st:set_meta(sres.group_name,sres.file_name,"O","name1=value1,name2=value2");
+--ngx.say(aa)
 		else
 		      local ok, err = st:append_by_buff(sres.group_name,sres.file_name,res)
 		end
