@@ -177,7 +177,8 @@ while true do
         else
         end
 ]]
-        if not sres==1 then
+        if sres==1 then
+        else
 		  local st = fdfs_storage(tk_ip)
 		if (not not ext) and (string.sub(ext,1,1)==".") then
 		    ext = string.sub(ext,2)
