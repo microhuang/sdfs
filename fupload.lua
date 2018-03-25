@@ -188,8 +188,8 @@ while true do
 		  if sres==nil then
 		      sres, serr = st:upload_appender_by_buff(res,ext)
 		      files[i] = sres.file_name
---local aa,bb=st:set_meta(sres.group_name,sres.file_name,"O","name1=value1,name2=value2");
---ngx.say(aa)
+			--local metadata = {origin_name="abcd.txt"}
+			--local aa,bb=st:set_metadata(sres.group_name,sres.file_name,metadata,"O");
 		else
 		      local ok, err = st:append_by_buff(sres.group_name,sres.file_name,res)
 		end
