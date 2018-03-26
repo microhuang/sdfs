@@ -94,17 +94,17 @@ if token and string.len(token)>1 then
     end
     local t = sessiondb:get(token)
     if not t then
-        --ngx.say("token id not found")
-        --return
+        ngx.say("token id not found")
+        return
     end
 else
-    --ngx.say("session id not found")
-    --return
+    ngx.say("session id not found")
+    return
 end
 
 -- paramers
 local cross_domain = ngx.var.cross_domain
-local file_path = ngx.var.file_path
+local file_path = ngx.var.sdfs_path
 
 --if not cross_domain then
 --    ngx.say("cross domain")
@@ -158,21 +158,33 @@ while true do
             if filename then
                 i=i+1
                 if not(sdfs_path=='' or sdfs_path==nil) then --自定义路径目前只能本地存储
-			  --ngx.say(osfilepath  .. sdfs_path .. '/' .. filename .. ext)
-                    filepath = osfilepath  .. sdfs_path .. '/' .. filename .. ext
-                	  --filepath = filepath .. ext
-		        --filepath = osfilepath  .. filename
-		        if file_exists(filepath) then
-		        	ngx.say('{"code":500, "message":"系统错误，请稍后再试!"}')
-		        	return
-		        else
+                    filepath = osfilepath  .. sdfs_path
+                    if file_exists(osfilepath  .. sdfs_path .. '/') then
+                        filepath = osfilepath  .. sdfs_path .. '/' .. filename .. ext
+                        if file_exists(filepath) then
+		        	   ngx.say('{"code":500, "message":"系统错误，文件存在!"}')
+		        	   return
+                        end
+                    else
+                        local ret = os.execute("mkdir -p " .. filepath)
+				if ret~=0 then
+					ngx.say('{"code":500, "message":"系统错误，不能写入目录!"}')
+					return
+				end
+                        filepath = osfilepath  .. sdfs_path .. '/' .. filename .. ext
+                    end
+                    --filepath = osfilepath  .. sdfs_path .. '/' .. filename .. ext
+		        --if file_exists(filepath) then
+		        --	ngx.say('{"code":500, "message":"系统错误，请稍后再试!"}')
+		        --	return
+		        --else
 		        	file = io.open(filepath,"wb+")
 		        	files[i] = filepath
 		        	if not file then
-		               ngx.say("failed to open file ")
+		               ngx.say("failed to open file: " .. filepath)
 		               return
 		        	end
-		        end
+		        --end
                 else --dfs存储
 		        sres = nil
 		        serr = nil
