@@ -48,14 +48,24 @@ function get_filename(res)
     local filename = ngx.re.match(res,'(.+)filename="(.+)"(.*)')
     if filename then
         --return filename[2]
-        --ngx.say(filename[2])
         math.randomseed(tostring(os.time()):reverse():sub(1, 6))
         --ngx.say(ngx.md5(math.random()));
-        local ext = ngx.re.match(filename[2],'/?((\\w+)/?)*(\\w+)(\\..*)')
+local sdfs_path = ngx.re.match(filename[2],'/?(.*)/')
+if sdfs_path and sdfs_path[1] then
+--ngx.say(sdfs_path[1])
+    sdfs_path = sdfs_path[1]
+else
+    sdfs_path = ''
+end
+        local ext = ngx.re.match(filename[2],'/?((\\w+)/?)*(\\w*)(\\..*)')
         if ext and ext[4] then
-            return ngx.md5(math.random()), ext[4]
+--ngx.say(ext[1])
+--ngx.say(ext[2])
+--ngx.say(ext[3])
+--ngx.say(ext[4])
+            return ngx.md5(math.random()), ext[4], sdfs_path
         end
-        return ngx.md5(math.random()), ''
+        return ngx.md5(math.random()), '', sdfs_path
     end
 end
 
@@ -84,12 +94,12 @@ if token and string.len(token)>1 then
     end
     local t = sessiondb:get(token)
     if not t then
-        ngx.say("token id not found")
-        return
+        --ngx.say("token id not found")
+        --return
     end
 else
-    ngx.say("session id not found")
-    return
+    --ngx.say("session id not found")
+    --return
 end
 
 -- paramers
@@ -132,6 +142,7 @@ local files = {}
 local i=0
 
 -- 
+local sdfs_path = ''
 local sres = nil
 local serr = nil
 
@@ -143,25 +154,29 @@ while true do
     end
     if typ == "header" then
         if res[1] ~= "Content-Type" then
-            filename,ext = get_filename(res[2])
+            filename,ext,sdfs_path = get_filename(res[2])
             if filename then
                 i=i+1
---[[
-                filepath = filepath .. ext
-                filepath = osfilepath  .. filename
-                if file_exists(filepath) then
-                	ngx.say('{"code":500, "message":"系统错误，请稍后再试!"}')
-                	return
-                else
-                	file = io.open(filepath,"wb+")
-                	if not file then
-                       ngx.say("failed to open file ")
-                       return
-                	end
+                if not(sdfs_path=='' or sdfs_path==nil) then --自定义路径目前只能本地存储
+			  --ngx.say(osfilepath  .. sdfs_path .. '/' .. filename .. ext)
+                    filepath = osfilepath  .. sdfs_path .. '/' .. filename .. ext
+                	  --filepath = filepath .. ext
+		        --filepath = osfilepath  .. filename
+		        if file_exists(filepath) then
+		        	ngx.say('{"code":500, "message":"系统错误，请稍后再试!"}')
+		        	return
+		        else
+		        	file = io.open(filepath,"wb+")
+		        	files[i] = filepath
+		        	if not file then
+		               ngx.say("failed to open file ")
+		               return
+		        	end
+		        end
+                else --dfs存储
+		        sres = nil
+		        serr = nil
                 end
-]]
-		    sres = nil
-		    serr = nil
             else
 		    -- 没有文件名？
 		    --ngx.say('{"code":500, "message":"系统错误，请稍后再试!"}')
@@ -170,42 +185,39 @@ while true do
             end
         end
     elseif typ == "body" then
---[[
         if file then
             filelen= filelen + tonumber(string.len(res))    
             file:write(res)
         else
-        end
-]]
-        if sres==1 then
-        else
-		  local st = fdfs_storage(tk_ip)
-		if (not not ext) and (string.sub(ext,1,1)==".") then
-		    ext = string.sub(ext,2)
-		    ext = string.sub(ext,-6)
-		    ext = string.gsub(ext,"^[%s.]*(.-)[%s.]*$","%1")
-		end
-		  if sres==nil then
-		      sres, serr = st:upload_appender_by_buff(res,ext)
-		      files[i] = sres.file_name
-			--local metadata = {origin_name="abcd.txt"}
-			--local aa,bb=st:set_metadata(sres.group_name,sres.file_name,metadata,"O");
+		if sres==1 then
 		else
-		      local ok, err = st:append_by_buff(sres.group_name,sres.file_name,res)
+			  local st = fdfs_storage(tk_ip)
+			if (not not ext) and (string.sub(ext,1,1)==".") then
+			    ext = string.sub(ext,2)
+			    ext = string.sub(ext,-6)
+			    ext = string.gsub(ext,"^[%s.]*(.-)[%s.]*$","%1")
+			end
+			  if sres==nil then
+			      sres, serr = st:upload_appender_by_buff(res,ext)
+			      files[i] = sres.file_name
+				--local metadata = {origin_name="abcd.txt"}
+				--local aa,bb=st:set_metadata(sres.group_name,sres.file_name,metadata,"O");
+			else
+			      local ok, err = st:append_by_buff(sres.group_name,sres.file_name,res)
+			end
+			  --ngx.say("upload success:" .. sres.file_name)
 		end
-		  --ngx.say("upload success:" .. sres.file_name)
         end
     elseif typ == "part_end" then
---[[
         if file then
             file:close()
             file = nil
             --ngx.say("file upload success: " .. filepath)
             ngx.say('{"code":200, "message":"file upload success", "data": "' .. filename .. '", "file":{"originalname":"' .. filepath .. '","size":123,"path":"' .. filename .. '"}}')
+        else
+		sres = nil
+		serr = nil
         end
-]]
-        sres = nil
-        serr = nil
     elseif typ == "eof" then
         sres = nil
         serr = nil
